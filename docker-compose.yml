@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  processwire:
+    depends_on:
+      - database
+    image: nico-local/processwire:latest
+    build:
+      context: .
+      target: processwire
+    ports:
+      - 80:80
+    environment:
+      TZ: CET
+    volumes:
+      - processwire:/var/www/html
+      - ./processwire/site-blank:/var/www/html/site
+    networks:
+      - frontend
+      - internal
+
+  database:
+    image: 'mariadb:10.5.17-focal'
+    environment:
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      TZ: CET
+      MARIADB_ROOT_PASSWORD: processwire
+      MARIADB_USER: processwire
+      MARIADB_PASSWORD: processwire
+      MARIADB_DATABASE: processwire
+    networks:
+      - internal
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+volumes:
+  processwire:
+  database:
+networks:
+  internal:
+  frontend:
